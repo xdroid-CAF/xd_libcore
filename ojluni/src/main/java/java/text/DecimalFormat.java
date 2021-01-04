@@ -39,7 +39,6 @@
 
 package java.text;
 
-import android.icu.impl.number.DecimalFormatProperties.ParseMode;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -490,7 +489,7 @@ public class DecimalFormat extends NumberFormat {
         this.icuDecimalFormat =  new android.icu.text.DecimalFormat(pattern,
                 symbols.getIcuDecimalFormatSymbols());
         // Android-changed: Compatibility mode for j.t.DecimalFormat. http://b/112355520
-        icuDecimalFormat.setParseStrictMode(ParseMode.JAVA_COMPATIBILITY);
+        icuDecimalFormat.setParseJavaCompatible(true);
         updateFieldsFromIcu();
     }
 
@@ -897,7 +896,7 @@ public class DecimalFormat extends NumberFormat {
         return format(number, result, fieldPosition.getFieldDelegate());
         */
         FieldPosition icuFieldPosition = getIcuFieldPosition(fieldPosition);
-        icuDecimalFormat.format(number, result, fieldPosition);
+        icuDecimalFormat.format(number, result, icuFieldPosition);
         fieldPosition.setBeginIndex(icuFieldPosition.getBeginIndex());
         fieldPosition.setEndIndex(icuFieldPosition.getEndIndex());
         return result;
@@ -966,7 +965,7 @@ public class DecimalFormat extends NumberFormat {
         return format(number, result, fieldPosition.getFieldDelegate(), false);
         */
         FieldPosition icuFieldPosition = getIcuFieldPosition(fieldPosition);
-        icuDecimalFormat.format(number, result, fieldPosition);
+        icuDecimalFormat.format(number, result, icuFieldPosition);
         fieldPosition.setBeginIndex(icuFieldPosition.getBeginIndex());
         fieldPosition.setEndIndex(icuFieldPosition.getEndIndex());
         return result;
