@@ -119,6 +119,15 @@ public final class OsConstants {
     public static final int AF_NETLINK = placeholder();
     public static final int AF_PACKET = placeholder();
     public static final int AF_UNIX = placeholder();
+
+    /**
+     * The virt-vsock address family, linux specific.
+     * It is used with {@code struct sockaddr_vm} from uapi/linux/vm_sockets.h.
+     *
+     * @see <a href="https://man7.org/linux/man-pages/man7/vsock.7.html">vsock(7)</a>
+     * @see VmSocketAddress
+     */
+    public static final int AF_VSOCK = placeholder();
     public static final int AF_UNSPEC = placeholder();
     public static final int AI_ADDRCONFIG = placeholder();
     public static final int AI_ALL = placeholder();
@@ -128,6 +137,39 @@ public final class OsConstants {
     public static final int AI_PASSIVE = placeholder();
     public static final int AI_V4MAPPED = placeholder();
     public static final int ARPHRD_ETHER = placeholder();
+
+    /**
+      * The virtio-vsock {@code svmPort} value to bind for any available port.
+      *
+      * @see <a href="https://man7.org/linux/man-pages/man7/vsock.7.html">vsock(7)</a>
+      * @see VmSocketAddress
+      */
+    public static final int VMADDR_PORT_ANY = placeholder();
+
+    /**
+      * The virtio-vsock {@code svmCid} value to listens for all CIDs.
+      *
+      * @see <a href="https://man7.org/linux/man-pages/man7/vsock.7.html">vsock(7)</a>
+      * @see VmSocketAddress
+      */
+    public static final int VMADDR_CID_ANY = placeholder();
+
+    /**
+      * The virtio-vsock {@code svmCid} value for host communication.
+      *
+      * @see <a href="https://man7.org/linux/man-pages/man7/vsock.7.html">vsock(7)</a>
+      * @see VmSocketAddress
+      */
+    public static final int VMADDR_CID_LOCAL = placeholder();
+
+    /**
+      * The virtio-vsock {@code svmCid} value for loopback communication.
+      *
+      * @see <a href="https://man7.org/linux/man-pages/man7/vsock.7.html">vsock(7)</a>
+      * @see VmSocketAddress
+      */
+    public static final int VMADDR_CID_HOST = placeholder();
+
     /** @hide */
     @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
@@ -632,9 +674,12 @@ public final class OsConstants {
     public static final int TCP_USER_TIMEOUT = placeholder();
     public static final int UDP_GRO = placeholder();
     public static final int UDP_SEGMENT = placeholder();
-    /** @hide */
+    /**
+     * Get the number of bytes in the output buffer.
+     * @hide
+     */
     @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static final int TIOCOUTQ = placeholder();
     /** @hide */
     @UnsupportedAppUsage

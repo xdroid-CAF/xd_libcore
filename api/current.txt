@@ -85,10 +85,12 @@ package android.system {
     method public static int readv(java.io.FileDescriptor, Object[], int[], int[]) throws android.system.ErrnoException, java.io.InterruptedIOException;
     method public static int recvfrom(java.io.FileDescriptor, java.nio.ByteBuffer, int, java.net.InetSocketAddress) throws android.system.ErrnoException, java.net.SocketException;
     method public static int recvfrom(java.io.FileDescriptor, byte[], int, int, int, java.net.InetSocketAddress) throws android.system.ErrnoException, java.net.SocketException;
+    method public static int recvmsg(@NonNull java.io.FileDescriptor, @NonNull android.system.StructMsghdr, int) throws android.system.ErrnoException, java.net.SocketException;
     method public static void remove(String) throws android.system.ErrnoException;
     method public static void removexattr(String, String) throws android.system.ErrnoException;
     method public static void rename(String, String) throws android.system.ErrnoException;
     method public static long sendfile(java.io.FileDescriptor, java.io.FileDescriptor, android.system.Int64Ref, long) throws android.system.ErrnoException;
+    method public static int sendmsg(@NonNull java.io.FileDescriptor, @NonNull android.system.StructMsghdr, int) throws android.system.ErrnoException, java.net.SocketException;
     method public static int sendto(java.io.FileDescriptor, java.nio.ByteBuffer, int, java.net.InetAddress, int) throws android.system.ErrnoException, java.net.SocketException;
     method public static int sendto(java.io.FileDescriptor, byte[], int, int, int, java.net.InetAddress, int) throws android.system.ErrnoException, java.net.SocketException;
     method public static int sendto(@NonNull java.io.FileDescriptor, @NonNull byte[], int, int, int, @Nullable java.net.SocketAddress) throws android.system.ErrnoException, java.net.SocketException;
@@ -143,6 +145,7 @@ package android.system {
     field public static final int AF_PACKET;
     field public static final int AF_UNIX;
     field public static final int AF_UNSPEC;
+    field public static final int AF_VSOCK;
     field public static final int AI_ADDRCONFIG;
     field public static final int AI_ALL;
     field public static final int AI_CANONNAME;
@@ -536,6 +539,10 @@ package android.system {
     field public static final int TCP_USER_TIMEOUT;
     field public static final int UDP_GRO;
     field public static final int UDP_SEGMENT;
+    field public static final int VMADDR_CID_ANY;
+    field public static final int VMADDR_CID_HOST;
+    field public static final int VMADDR_CID_LOCAL;
+    field public static final int VMADDR_PORT_ANY;
     field public static final int WCONTINUED;
     field public static final int WEXITED;
     field public static final int WNOHANG;
@@ -634,6 +641,22 @@ package android.system {
     field public static final int _SC_XOPEN_UNIX;
     field public static final int _SC_XOPEN_VERSION;
     field public static final int _SC_XOPEN_XCU_VERSION;
+  }
+
+  public final class StructCmsghdr {
+    ctor public StructCmsghdr(int, int, short);
+    ctor public StructCmsghdr(int, int, @NonNull byte[]);
+    field @NonNull public final byte[] cmsg_data;
+    field public final int cmsg_level;
+    field public final int cmsg_type;
+  }
+
+  public final class StructMsghdr {
+    ctor public StructMsghdr(@Nullable java.net.SocketAddress, @NonNull java.nio.ByteBuffer[], @Nullable android.system.StructCmsghdr[], int);
+    field @Nullable public android.system.StructCmsghdr[] msg_control;
+    field public int msg_flags;
+    field @NonNull public final java.nio.ByteBuffer[] msg_iov;
+    field @Nullable public java.net.SocketAddress msg_name;
   }
 
   public final class StructPollfd {
@@ -2939,9 +2962,9 @@ package java.lang {
     method public static void enable();
   }
 
-  @Deprecated @java.lang.annotation.Documented @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME) @java.lang.annotation.Target({java.lang.annotation.ElementType.CONSTRUCTOR, java.lang.annotation.ElementType.FIELD, java.lang.annotation.ElementType.LOCAL_VARIABLE, java.lang.annotation.ElementType.METHOD, java.lang.annotation.ElementType.PACKAGE, java.lang.annotation.ElementType.PARAMETER, java.lang.annotation.ElementType.TYPE}) public @interface Deprecated {
-    method @Deprecated public abstract boolean forRemoval() default false;
-    method @Deprecated public abstract String since() default "";
+  @java.lang.annotation.Documented @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME) @java.lang.annotation.Target({java.lang.annotation.ElementType.CONSTRUCTOR, java.lang.annotation.ElementType.FIELD, java.lang.annotation.ElementType.LOCAL_VARIABLE, java.lang.annotation.ElementType.METHOD, java.lang.annotation.ElementType.PACKAGE, java.lang.annotation.ElementType.PARAMETER, java.lang.annotation.ElementType.TYPE}) public @interface Deprecated {
+    method public abstract boolean forRemoval() default false;
+    method public abstract String since() default "";
   }
 
   public final class Double extends java.lang.Number implements java.lang.Comparable<java.lang.Double> {
@@ -4158,6 +4181,7 @@ package java.lang.annotation {
     enum_constant public static final java.lang.annotation.ElementType FIELD;
     enum_constant public static final java.lang.annotation.ElementType LOCAL_VARIABLE;
     enum_constant public static final java.lang.annotation.ElementType METHOD;
+    enum_constant public static final java.lang.annotation.ElementType MODULE;
     enum_constant public static final java.lang.annotation.ElementType PACKAGE;
     enum_constant public static final java.lang.annotation.ElementType PARAMETER;
     enum_constant public static final java.lang.annotation.ElementType TYPE;
@@ -4375,7 +4399,7 @@ package java.lang.ref {
     method public void clear();
     method public boolean enqueue();
     method public T get();
-    method public boolean isEnqueued();
+    method @Deprecated public boolean isEnqueued();
     method public static void reachabilityFence(Object);
   }
 
@@ -13065,6 +13089,7 @@ package java.util {
   public interface List<E> extends java.util.Collection<E> {
     method public void add(int, E);
     method public boolean addAll(int, @NonNull java.util.Collection<? extends E>);
+    method @NonNull public static <E> java.util.List<E> copyOf(@NonNull java.util.Collection<? extends E>);
     method public E get(int);
     method public int indexOf(@Nullable Object);
     method public int lastIndexOf(@Nullable Object);
@@ -13236,7 +13261,7 @@ package java.util {
     method @Nullable public default V computeIfPresent(K, @NonNull java.util.function.BiFunction<? super K,? super V,? extends V>);
     method public boolean containsKey(@Nullable Object);
     method public boolean containsValue(@Nullable Object);
-    method public static <K, V> java.util.Map<K,V> copyOf(java.util.Map<? extends K,? extends V>);
+    method @NonNull public static <K, V> java.util.Map<K,V> copyOf(@NonNull java.util.Map<? extends K,? extends V>);
     method @NonNull public static <K, V> java.util.Map.Entry<K,V> entry(@NonNull K, @NonNull V);
     method @NonNull public java.util.Set<java.util.Map.Entry<K,V>> entrySet();
     method public boolean equals(@Nullable Object);
@@ -13659,7 +13684,7 @@ package java.util {
   }
 
   public interface Set<E> extends java.util.Collection<E> {
-    method public static <E> java.util.Set<E> copyOf(java.util.Collection<? extends E>);
+    method @NonNull public static <E> java.util.Set<E> copyOf(@NonNull java.util.Collection<? extends E>);
     method @NonNull public static <E> java.util.Set<E> of();
     method @NonNull public static <E> java.util.Set<E> of(@NonNull E);
     method @NonNull public static <E> java.util.Set<E> of(@NonNull E, @NonNull E);
@@ -14139,9 +14164,19 @@ package java.util.concurrent {
     method public <U> java.util.concurrent.CompletableFuture<U> applyToEitherAsync(java.util.concurrent.CompletionStage<? extends T>, java.util.function.Function<? super T,U>, java.util.concurrent.Executor);
     method public boolean cancel(boolean);
     method public boolean complete(T);
+    method public java.util.concurrent.CompletableFuture<T> completeAsync(java.util.function.Supplier<? extends T>, java.util.concurrent.Executor);
+    method public java.util.concurrent.CompletableFuture<T> completeAsync(java.util.function.Supplier<? extends T>);
     method public boolean completeExceptionally(Throwable);
+    method public java.util.concurrent.CompletableFuture<T> completeOnTimeout(T, long, java.util.concurrent.TimeUnit);
     method public static <U> java.util.concurrent.CompletableFuture<U> completedFuture(U);
+    method public static <U> java.util.concurrent.CompletionStage<U> completedStage(U);
+    method public java.util.concurrent.CompletableFuture<T> copy();
+    method public java.util.concurrent.Executor defaultExecutor();
+    method public static java.util.concurrent.Executor delayedExecutor(long, java.util.concurrent.TimeUnit, java.util.concurrent.Executor);
+    method public static java.util.concurrent.Executor delayedExecutor(long, java.util.concurrent.TimeUnit);
     method public java.util.concurrent.CompletableFuture<T> exceptionally(java.util.function.Function<java.lang.Throwable,? extends T>);
+    method public static <U> java.util.concurrent.CompletableFuture<U> failedFuture(Throwable);
+    method public static <U> java.util.concurrent.CompletionStage<U> failedStage(Throwable);
     method public T get() throws java.util.concurrent.ExecutionException, java.lang.InterruptedException;
     method public T get(long, java.util.concurrent.TimeUnit) throws java.util.concurrent.ExecutionException, java.lang.InterruptedException, java.util.concurrent.TimeoutException;
     method public T getNow(T);
@@ -14153,8 +14188,11 @@ package java.util.concurrent {
     method public boolean isCompletedExceptionally();
     method public boolean isDone();
     method public T join();
+    method public java.util.concurrent.CompletionStage<T> minimalCompletionStage();
+    method public <U> java.util.concurrent.CompletableFuture<U> newIncompleteFuture();
     method public void obtrudeException(Throwable);
     method public void obtrudeValue(T);
+    method public java.util.concurrent.CompletableFuture<T> orTimeout(long, java.util.concurrent.TimeUnit);
     method public java.util.concurrent.CompletableFuture<java.lang.Void> runAfterBoth(java.util.concurrent.CompletionStage<?>, Runnable);
     method public java.util.concurrent.CompletableFuture<java.lang.Void> runAfterBothAsync(java.util.concurrent.CompletionStage<?>, Runnable);
     method public java.util.concurrent.CompletableFuture<java.lang.Void> runAfterBothAsync(java.util.concurrent.CompletionStage<?>, Runnable, java.util.concurrent.Executor);

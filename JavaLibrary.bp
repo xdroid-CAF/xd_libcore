@@ -146,6 +146,7 @@ java_defaults {
             "-Xep:ConstantOverflow:WARN", // Known constant overflow in SplittableRandom
         ],
     },
+    min_sdk_version: "31",
 }
 
 //
@@ -169,6 +170,10 @@ java_library {
         ":openjdk_lambda_stub_files",
         ":openjdk_generated_annotation_stub_files",
         ":app-compat-annotations-source",
+
+        // Use the okhttp source too to allow libcore code to reference it
+        // directly.
+        ":okhttp_impl_files",
     ],
 
     sdk_version: "none",
@@ -187,11 +192,18 @@ java_library {
         "compat-changeid-annotation-processor",
         "unsupportedappusage-annotation-processor",
     ],
+    libs: [
+        "conscrypt.module.intra.core.api",
+    ],
 }
 
 platform_compat_config {
     name: "libcore-platform-compat-config",
     src: ":core-all",
+    visibility: [
+        "//art/build/apex",
+        "//art/build/sdk",
+    ],
 }
 
 // A system modules definition for use by core library targets only. It only
@@ -527,6 +539,14 @@ genrule {
     tools: ["smali"],
 }
 
+filegroup {
+    name: "core-ojtests-javax-resources",
+    // Set path to keep the resources and .class files in the same directory in the jar file.
+    path: "ojluni/src",
+    srcs: ["ojluni/src/test/javax/**/*"],
+    exclude_srcs: ["ojluni/src/test/javax/**/*.java"],
+}
+
 // Builds the core-tests library.
 java_test {
     name: "core-tests",
@@ -561,6 +581,7 @@ java_test {
     ],
     exclude_java_resource_dirs: [
         "ojluni/src/test/java",
+        "ojluni/src/test/javax",
         "ojluni/src/test/resources",
     ],
 
@@ -646,10 +667,15 @@ java_test {
 
     srcs: [
         "ojluni/src/test/java/**/*.java",
+        "ojluni/src/test/javax/**/*.java",
     ],
     java_resource_dirs: [
         "ojluni/src/test/java",
         "ojluni/src/test/resources",
+    ],
+
+    java_resources: [
+        ":core-ojtests-javax-resources",
     ],
 
     sdk_version: "none",
@@ -659,7 +685,10 @@ java_test {
         "bouncycastle",
     ],
 
-    static_libs: ["testng"],
+    static_libs: [
+        "junit",
+        "testng",
+    ],
 
     // ojluni/src/test/java/util/stream/{bootlib,boottest}
     // contains tests that are in packages from java.base;
@@ -689,6 +718,7 @@ java_test {
     defaults: ["libcore_java_defaults"],
     srcs: [
         "ojluni/src/test/java/**/*.java",
+        "ojluni/src/test/javax/**/*.java",
     ],
     // Filter out the following:
     // 1.) DeserializeMethodTest and SerializedLambdaTest, because they depends on stub classes
@@ -707,10 +737,15 @@ java_test {
         "ojluni/src/test/dist",
     ],
 
+    java_resources: [
+        ":core-ojtests-javax-resources",
+    ],
+
     sdk_version: "none",
     system_modules: "core-all-system-modules",
     libs: [
         "bouncycastle",
+        "junit",
         "okhttp",
         "testng",
     ],
