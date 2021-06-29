@@ -30,8 +30,8 @@ import dalvik.annotation.optimization.FastNative;
  *
  * @hide
  */
-@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-public final class DdmServer {
+@libcore.api.CorePlatformApi
+public class DdmServer {
 
     private static HashMap<Integer,ChunkHandler> mHandlerMap =
         new HashMap<Integer,ChunkHandler>();
@@ -49,16 +49,12 @@ public final class DdmServer {
     private DdmServer() {}
 
     /**
-     * Register an instance of the {@link ChunkHandler} class to handle a specific
+     * Register an instance of the ChunkHandler class to handle a specific
      * chunk type.
      *
      * Throws an exception if the type already has a handler registered.
-     *
-     * @param type    int describing registered handler
-     * @param handler handler to be registered
-     * @throws NullPointerException if {@code handler} is {@code null}
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static void registerHandler(int type, ChunkHandler handler) {
         if (handler == null) {
             throw new NullPointerException("handler == null");
@@ -77,7 +73,6 @@ public final class DdmServer {
      *
      * Returns the old handler.
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static ChunkHandler unregisterHandler(int type) {
         synchronized (mHandlerMap) {
             return mHandlerMap.remove(type);
@@ -88,7 +83,7 @@ public final class DdmServer {
      * The application must call here after it finishes registering
      * handlers.
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static void registrationComplete() {
         // sync on mHandlerMap because it's convenient and makes a kind of
         // sense
@@ -103,11 +98,9 @@ public final class DdmServer {
      * JDWP "event", which does not elicit a response from the server.
      *
      * Use this for "unsolicited" chunks.
-     *
-     * @param chunk to send
      */
     @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static void sendChunk(Chunk chunk) {
         nativeSendChunk(chunk.type, chunk.data, chunk.offset, chunk.length);
     }
@@ -131,10 +124,10 @@ public final class DdmServer {
                 ChunkHandler handler = (ChunkHandler) iter.next();
                 switch (event) {
                     case CONNECTED:
-                        handler.onConnected();
+                        handler.connected();
                         break;
                     case DISCONNECTED:
-                        handler.onDisconnected();
+                        handler.disconnected();
                         break;
                     default:
                         throw new UnsupportedOperationException();

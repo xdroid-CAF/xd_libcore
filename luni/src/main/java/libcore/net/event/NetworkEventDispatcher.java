@@ -26,7 +26,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @hide
  */
 @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-public final class NetworkEventDispatcher {
+public class NetworkEventDispatcher {
 
   private static final NetworkEventDispatcher instance = new NetworkEventDispatcher();
 
@@ -44,8 +44,8 @@ public final class NetworkEventDispatcher {
     return instance;
   }
 
-  /** @hide Visible for testing. Use {@link #getInstance()} instead. */
-  public NetworkEventDispatcher() {
+  /** Visible for testing. Use {@link #getInstance()} instead. */
+  protected NetworkEventDispatcher() {
   }
 
   /**
@@ -77,7 +77,7 @@ public final class NetworkEventDispatcher {
    * Notifies registered listeners of a network configuration change.
    */
   @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-  public void dispatchNetworkConfigurationChange() {
+  public void onNetworkConfigurationChanged() {
     for (NetworkEventListener listener : listeners) {
       try {
         listener.onNetworkConfigurationChanged();
